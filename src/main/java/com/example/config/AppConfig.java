@@ -1,5 +1,8 @@
 package com.example.config;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -9,16 +12,27 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.example.model.User;
+import com.example.repository.UserRepository;
+
+
 @Configuration
 public class AppConfig {
 
+	@Autowired
+	private UserRepository userRepository;
+	
 	@Bean
 	public UserDetailsService userDetailsService() {
 		return new UserDetailsService() {
 			
 			@Override
 			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-				// TODO Auto-generated method stub
+				Optional<User> optional = userRepository.findByUsername(username);
+				
+				if(optional.isPresent()) {
+					return optional.get();
+				}
 				return null;
 			}
 		};
@@ -29,7 +43,7 @@ public class AppConfig {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService());
 		authenticationProvider.setPasswordEncoder(passwordEncoder());
 
-		return null;
+		return authenticationProvider;
 	}
 
 	@Bean
