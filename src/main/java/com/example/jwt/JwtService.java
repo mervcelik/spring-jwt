@@ -21,27 +21,38 @@ public class JwtService {
 	public static final String SECRET_KEY = "5N+6yAw9UJ1ZGIE3ivXxkQlxnb9BauSkvcdSJ447DQE=";
 
 	public String generateToken(UserDetails userDetails) {
-		Map<String, String> claimsMap= new HashMap<>();
-		claimsMap.put("role", "ADMIN");
+	    Map<String, String> claimsMap = new HashMap<>();
+	    claimsMap.put("role", "ADMIN");
 
-		
-		return Jwts.builder()
-				.setSubject(userDetails.getUsername())
-				.setClaims(claimsMap)
-				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))
-				.signWith(getKey(), SignatureAlgorithm.HS256).compact();
+	    return Jwts.builder()
+	            .setClaims(claimsMap)
+	            .setSubject(userDetails.getUsername())
+	            .setIssuedAt(new Date())
+	            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))
+	            .signWith(getKey(), SignatureAlgorithm.HS256)
+	            .compact();
 	}
-
-	public <T> T exportToken(String token, Function<Claims, T> claimsFunction) {
-		Claims claims = Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJwt(token).getBody();
-		return claimsFunction.apply(claims);
-	}
-
 	public String getUserNameByToken(String token) {
-		return exportToken(token, Claims::getSubject);
+	    return exportToken(token, Claims::getSubject);
 	}
 
+	public <T> T exportToken(String token, Function<Claims, T> claimsResolver) {
+	    Claims claims = getClaims(token);
+	    return claimsResolver.apply(claims);
+	}
+
+	private Claims getClaims(String token) {
+	    return Jwts.parserBuilder()
+	            .setSigningKey(getKey())
+	            .build()
+	            .parseClaimsJws(token)
+	            .getBody();
+	}
+
+	public Object getClaimsByKey(String token,String key) {
+		Claims claims= getClaims(token);
+		return claims.get(key);
+	}
 	public boolean isTokenExpired(String token) {
 		Date expiredDate = exportToken(token, Claims::getExpiration);
 		return new Date().before(expiredDate);

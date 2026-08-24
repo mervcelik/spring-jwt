@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
+
 		String header;
 		String token;
 		String userName;
@@ -50,8 +52,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					
 					authentication.setDetails(userDetails);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
+					System.out.println("Authentication: " +
+						    SecurityContextHolder.getContext().getAuthentication());
 				}
 			}
+		} catch (ExpiredJwtException e) {
+			System.out.println("Token Süresi dolmuştur: "+e.getMessage());
 		} catch (Exception e) {
 			System.out.println("Genel bir hata oluştu: "+e.getMessage());
 		}

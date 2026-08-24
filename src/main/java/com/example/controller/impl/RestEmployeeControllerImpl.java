@@ -10,11 +10,10 @@ import com.example.controller.IRestEmployeeController;
 import com.example.dto.DtoEmployee;
 import com.example.service.IEmployeeService;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
+
 
 @RestController
-@RequestMapping("/Employee")
+@RequestMapping("/employee")
 public class RestEmployeeControllerImpl implements IRestEmployeeController {
 
 	@Autowired
@@ -23,7 +22,7 @@ public class RestEmployeeControllerImpl implements IRestEmployeeController {
 	
 	@GetMapping("/{id}")
 	@Override
-	public DtoEmployee finDtoEmployeeById(@Valid @NotEmpty @PathVariable Long id) {
+	public DtoEmployee finDtoEmployeeById(@PathVariable Long id) {
 
 		return employeeService.finDtoEmployeeById(id);
 	}
