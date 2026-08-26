@@ -1,6 +1,9 @@
 package com.example.service.impl;
 
+import java.security.PrivateKey;
+import java.sql.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +16,11 @@ import com.example.dto.DtoUser;
 import com.example.jwt.AuthRequest;
 import com.example.jwt.AuthResponse;
 import com.example.jwt.JwtService;
+import com.example.model.RefreshToken;
 import com.example.model.User;
 import com.example.repository.UserRepository;
 import com.example.service.IAuthService;
+import com.example.service.IRefreshTokenService;
 
 @Service
 public class AuthServiceImpl implements IAuthService {
@@ -31,6 +36,13 @@ public class AuthServiceImpl implements IAuthService {
 	@Autowired
 	private JwtService jwtService;
 
+	
+	@Autowired
+	private IRefreshTokenService refreshTokenService;
+	
+	
+	
+	
     AuthServiceImpl(AuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
@@ -55,13 +67,16 @@ public class AuthServiceImpl implements IAuthService {
 
 			 authenticationProvider.authenticate(auth);
 			Optional<User> optional = userRepository.findByUsername(request.getUsername());
-			 String token = jwtService.generateToken(optional.get());
+			 String accessToken = jwtService.generateToken(optional.get());
+			 RefreshToken refreshToken = refreshTokenService.createRefreshToken(optional.get());
 			 
-			 return new AuthResponse(token);
+			 
+			 return new AuthResponse(accessToken,refreshToken.getRefreshToken());
 		} catch (Exception e) {
 			System.out.println("Kullanıcı adı veya şifre hatalı");
 		}
 		return null;
 	}
 
+	
 }

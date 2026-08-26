@@ -19,6 +19,7 @@ public class SecurityConfig {
 
 	private static final String AUTHENTICATE = "/authenticate";
 	private static final String REGISTER = "/register";
+	private static final String REFRESHTOKEN = "/refreshToken";
 
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
@@ -34,7 +35,7 @@ public class SecurityConfig {
 	    http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(request -> request
-            .requestMatchers(AUTHENTICATE, REGISTER).permitAll()
+            .requestMatchers(AUTHENTICATE, REGISTER,REFRESHTOKEN).permitAll()
             .anyRequest().authenticated()
         ).exceptionHandling(exception -> exception
                 .authenticationEntryPoint(authEntryPoint)
