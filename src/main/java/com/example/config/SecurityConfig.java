@@ -21,6 +21,7 @@ public class SecurityConfig {
 	private static final String REGISTER = "/register";
 	private static final String REFRESHTOKEN = "/refreshToken";
 
+	private static final String[] SWAGGER_Path = { "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**" };
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
 
@@ -29,25 +30,17 @@ public class SecurityConfig {
 
 	@Autowired
 	AuthEntryPoint authEntryPoint;
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
 
-	    http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(request -> request
-            .requestMatchers(AUTHENTICATE, REGISTER,REFRESHTOKEN).permitAll()
-            .anyRequest().authenticated()
-        ).exceptionHandling(exception -> exception
-                .authenticationEntryPoint(authEntryPoint)
-                )
-        .sessionManagement(session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        .authenticationProvider(authenticationProvider)
-        .addFilterBefore(
-            jwtAuthenticationFilter,
-            UsernamePasswordAuthenticationFilter.class
-        );
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+		http.csrf(csrf -> csrf.disable())
+				.authorizeHttpRequests(request -> request.requestMatchers(AUTHENTICATE, REGISTER, REFRESHTOKEN)
+						.permitAll().requestMatchers(SWAGGER_Path).permitAll().anyRequest().authenticated())
+				.exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPoint))
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authenticationProvider(authenticationProvider)
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
