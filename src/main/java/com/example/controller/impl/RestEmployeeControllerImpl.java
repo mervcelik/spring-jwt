@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +32,7 @@ public class RestEmployeeControllerImpl implements IRestEmployeeController {
 
 	@GetMapping("list/pageable")
 	@Override
-	public Page<Employee> findAllPageable(RestPageableRequest pageable) {
+	public Page<Employee> findAllPageable(@ModelAttribute RestPageableRequest pageable) {
 		
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 		return employeeService.findAllPageable(pageRequest);
