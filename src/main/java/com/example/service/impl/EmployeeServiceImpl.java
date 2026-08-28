@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.dto.DtoDepartment;
@@ -39,6 +41,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
 		BeanUtils.copyProperties(department, dtoDepartment);
 		dtoEmployee.setDepartment(dtoDepartment);
 		return dtoEmployee;
+	}
+
+	@Override
+	public Page<Employee> findAllPageable(Pageable pageable) {
+		  Page<Employee> allPageable = employeeRepository.findAllPageable(pageable);
+		  return allPageable;
 	}
 
 }
