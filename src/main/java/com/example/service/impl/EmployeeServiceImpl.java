@@ -1,5 +1,7 @@
 package com.example.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -47,6 +49,24 @@ public class EmployeeServiceImpl implements IEmployeeService {
 	public Page<Employee> findAllPageable(Pageable pageable) {
 		  Page<Employee> allPageable = employeeRepository.findAllPageable(pageable);
 		  return allPageable;
+	}
+
+	@Override
+	public List<DtoEmployee> toDTOList(List<Employee> employees) {
+		List<DtoEmployee> list= new ArrayList<>();
+		
+		for (Employee employee : employees) {
+			DtoEmployee dtoEmployee= new DtoEmployee();
+			DtoDepartment dtoDepartment= new DtoDepartment();
+			
+			BeanUtils.copyProperties(employee, dtoEmployee);
+			BeanUtils.copyProperties(employee.getDepartment(), dtoDepartment);
+			
+			dtoEmployee.setDepartment(dtoDepartment);
+			
+			list.add(dtoEmployee);
+		}
+		return list;
 	}
 
 }

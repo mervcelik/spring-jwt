@@ -1,12 +1,12 @@
 package com.example.controller;
 
-import org.springframework.data.domain.Page;
 
 import com.example.dto.DtoEmployee;
-import com.example.model.Employee;
+import com.example.utils.RestPageableEntity;
 import com.example.utils.RestPageableRequest;
+import com.example.utils.RestRootEntity;
 
 public interface IRestEmployeeController {
 	public DtoEmployee finDtoEmployeeById(Long id);
-	Page<Employee> findAllPageable(RestPageableRequest pageable ); 
+	RestRootEntity<RestPageableEntity<DtoEmployee>> findAllPageable(RestPageableRequest pageable ); 
 }
